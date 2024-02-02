@@ -50,6 +50,12 @@
 
       <v-spacer></v-spacer>
 
+        <span v-if="logged" class="white--text">{{ `Ciao, ${loggedInUser.firstName}!` }}</span>
+        <v-avatar v-if="logged" :size="32" class="mr-2">
+          <v-img :src="loggedInUser.image" alt="Avatar"></v-img>
+        </v-avatar>
+        <v-btn v-if="logged" color="red" @click="handleLogout">LOGOUT</v-btn>
+
 
     </v-app-bar>
 
@@ -68,13 +74,32 @@
 export default {
   data() {
     return {
+      logged: false,
       drawer: false,
     };
+  },
+  computed: {
+    loggedInUser() {
+      const userJSON = localStorage.getItem('loggedInUser');
+      return userJSON ? JSON.parse(userJSON) : null;
+    },
   },
   methods: {
     toggleDrawer() {
       this.drawer = !this.drawer;
     },
+    updateLoggedStatus() {
+      const userJSON = localStorage.getItem('loggedInUser');
+      this.logged = userJSON !== null;
+    },
+    handleLogout() {
+      localStorage.removeItem('loggedInUser');
+      this.logged = false;
+      this.$router.push('/');
+    },
+  },
+  mounted() {
+    this.updateLoggedStatus();
   },
 };
 </script>
